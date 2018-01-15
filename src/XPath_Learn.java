@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 //comment the above line and uncomment below line to use Chrome
 //import org.openqa.selenium.chrome.ChromeDriver;
-public class ListPage_Test {
+public class XPath_Learn {
 
 
     public static void main(String[] args) {
@@ -19,21 +19,16 @@ public class ListPage_Test {
 		//System.setProperty("webdriver.chrome.driver","G:\\chromedriver.exe");
 		//WebDriver driver = new ChromeDriver();
 
-        String baseUrl = "file:///C:/codeEclipse460/Selenium/pages/Page.htm";
+        String baseUrl = "http://demo.guru99.com/v1/";
 
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
-        
-        
-        ListPage list= new ListPage(driver);
-
-        list.getTable();
-
-//        String [] matches={"1080P"};
-//        List<String> links=list.getLinks(matches);
-//        System.out.println("Links:"+links);
-        //close Fire fox
-        //driver.close();
+        List<WebElement> eles = driver.findElements(By.tagName("table"));
+        if(eles!=null) {
+			System.out.println("There are "+eles.size()+" tables");
+        	for(WebElement ele:eles) {
+	        }
+        }
 
     }
 
