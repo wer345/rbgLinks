@@ -1,5 +1,6 @@
 package Utils;
 //package net.codejava.networking;
+//code from http://www.codejava.net/java-se/networking/use-httpurlconnection-to-download-file-from-an-http-url
 
 import java.io.File;
 import java.io.FileOutputStream;
