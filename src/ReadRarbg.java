@@ -1,13 +1,16 @@
 
+import java.io.IOException;
 import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import Utils.HTTPDownload;
 //comment the above line and uncomment below line to use Chrome
 //import org.openqa.selenium.chrome.ChromeDriver;
 public class ReadRarbg {
-
+	static int headlen="http://rarbg.to/torrent/".length();
 
     public static void main(String[] args) {
         // declaration and instantiation of objects/variables
@@ -25,37 +28,29 @@ public class ReadRarbg {
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
         String lastUrl="";
+        String saveDir = "C:/Temp";
+
         while(true) {
         	String url=driver.getCurrentUrl();
 			System.out.println("URL:"+url);
         	if(!url.equals(lastUrl)) {
+        		System.out.println("Detected new page: "+url);
                 ListPage list= new ListPage(driver);
 
                 List<BtInfo> bts=list.getTable();
                 if(bts!=null) {
                 	for(BtInfo bt:bts) {
-                		System.out.println("Get page: "+bt.url);
-                		driver.get(bt.url);
-                		for(int i=0;i<8;i++){
-                			System.out.println("-URL:"+driver.getCurrentUrl());
-        	        		try {
-        		        		if(bt.url.equals(driver.getCurrentUrl())) {
-//        			        		Thread.sleep(1000);
-        			                DownloadPage dl= new DownloadPage(driver);
-        			                System.out.println("Downloading");
-        			                dl.download();
-        			                System.out.println("Downloading completed");
-        			        		break;
-        		        		}
-        		        		System.out.println("Sleep");
-        						Thread.sleep(1000);
-        					} catch (InterruptedException e) {
-        						// TODO Auto-generated catch block
-        						e.printStackTrace();
-        					}
-                		}
+                		String id=bt.url.substring(headlen);
+                		String urlT="http://rarbg.to/download.php?id="+id+"&f="+
+                		bt.name+"-[rarbg.to].torrent";
+                		System.out.println("download: "+urlT);
+                        try {
+							HTTPDownload.downloadFile(urlT, saveDir);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                 	}
-
                 }
         		
 	        	lastUrl=url;
