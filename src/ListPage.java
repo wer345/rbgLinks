@@ -6,6 +6,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class ListPage {
+	public static String TorPath="http://rarbg.to/torrent/"; 
+	public static int headlen=TorPath.length();
+
 	WebDriver driver;
 
 	ListPage(WebDriver driver) {
@@ -33,7 +36,8 @@ public class ListPage {
 						if(icol==1) {
 							WebElement link = cell.findElement(By.xpath("a"));
 							bt.name=link.getText();
-							bt.url=link.getAttribute("href");
+							bt.id=link.getAttribute("href").substring(headlen);
+							
 							//System.out.println("Title "+text+" :"+url);
 						}
 						else if(icol==2) {

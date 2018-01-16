@@ -10,7 +10,6 @@ import Utils.HTTPDownload;
 //comment the above line and uncomment below line to use Chrome
 //import org.openqa.selenium.chrome.ChromeDriver;
 public class ReadRarbg {
-	static int headlen="http://rarbg.to/torrent/".length();
 
     public static void main(String[] args) {
         // declaration and instantiation of objects/variables
@@ -40,8 +39,7 @@ public class ReadRarbg {
                 List<BtInfo> bts=list.getTable();
                 if(bts!=null) {
                 	for(BtInfo bt:bts) {
-                		String id=bt.url.substring(headlen);
-                		String urlT="http://rarbg.to/download.php?id="+id+"&f="+
+                		String urlT="http://rarbg.to/download.php?id="+bt.id+"&f="+
                 		bt.name+"-[rarbg.to].torrent";
                 		System.out.println("download: "+urlT);
                         try {

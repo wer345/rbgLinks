@@ -30,11 +30,12 @@ public class ListPage_Test {
         List<BtInfo> bts=list.getTable();
         if(bts!=null) {
         	for(BtInfo bt:bts) {
-        		System.out.println("Get page: "+bt.url);
-        		driver.get(bt.url);
+        		String url=ListPage.TorPath+bt.id;
+        		System.out.println("Get page: "+url);
+        		driver.get(url);
         		for(int i=0;i<50;i++){
 	        		try {
-		        		if(bt.url.equals(driver.getCurrentUrl())) {
+		        		if(url.equals(driver.getCurrentUrl())) {
 			        		Thread.sleep(1000);
 			                DownloadPage dl= new DownloadPage(driver);
 			                System.out.println("Downloading");
