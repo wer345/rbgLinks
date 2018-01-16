@@ -1,7 +1,7 @@
 
 public class BtTable_Test {
     public static void main(String[] args) {
-    	BtTable tb= new BtTable("C:\\a.csv");
+    	BtTable tb= new BtTable("C:\\a.txt");
     	BtInfo d= new BtInfo();
     	d.id="31";
     	d.name="AA";
@@ -18,6 +18,6 @@ public class BtTable_Test {
     	d.seeder=2;
     	d.leech=3;
     	tb.put(d);
-    	tb.saveToFile("C:\\b.csv");
+    	tb.saveToFile("C:\\b.txt");
     }
 }

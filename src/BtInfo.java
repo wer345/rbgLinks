@@ -8,7 +8,7 @@ public class BtInfo implements Linedata{
 	int leech=0;
 	@Override
 	public void decode(String line) {
-		String[] fields=line.split(",");
+		String[] fields=line.split("\t");
 		if(fields.length==6) {
 			id=fields[0];
 			name=fields[1];
@@ -23,6 +23,6 @@ public class BtInfo implements Linedata{
 	public String encode() {
 		if(id==null)
 			return null;
-		return id+","+name+","+addedTime+","+size+","+seeder+","+leech;
+		return id+"\t"+name+"\t"+addedTime+"\t"+size+"\t"+seeder+"\t"+leech;
 	}
 }
