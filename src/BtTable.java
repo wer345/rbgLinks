@@ -3,7 +3,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +19,10 @@ public class BtTable {
 		loadFromFile(fileName);
 	}
 
+	public boolean contains(String id) {
+		return map.get(id)!=null;
+	}
+	
 	public void put(BtInfo data) {
     	map.put(data.id, data);
 	}

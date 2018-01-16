@@ -27,10 +27,30 @@ public class ReadRarbg {
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
         String lastUrl="";
-        String saveDir = "C:/Temp";
+        String saveDir = "C:\\Temp";
+        String dataFolder="data";
+        String fnFound="found.csv";
+        String fnNew="new.csv";
+        String fnLoaded="loaded.csv";
+        String path=saveDir+"\\"+dataFolder+"\\";
 
+	    BtTable tbFound=new BtTable(path+fnFound);
+	    BtTable tbNew=new BtTable(path+fnNew);
+	    BtTable tbLoaded=new BtTable(path+fnLoaded);
+	    
         while(true) {
-        	String url=driver.getCurrentUrl();
+        	String url="";
+        	try {
+        		url=driver.getCurrentUrl();
+        	}
+        	catch (Exception e) {
+        		try {
+        			System.out.println("Failed to get current URL");
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+				}
+        		continue;
+        	}
 			System.out.println("URL:"+url);
         	if(!url.equals(lastUrl)) {
         		System.out.println("Detected new page: "+url);
@@ -38,17 +58,30 @@ public class ReadRarbg {
 
                 List<BtInfo> bts=list.getTable();
                 if(bts!=null) {
+                	
                 	for(BtInfo bt:bts) {
+                		if(tbFound.contains(bt.id) || tbNew.contains(bt.id)) {
+                			System.out.println("Old one: "+bt.id+":"+bt.name);
+                			continue;
+                		}
+                		tbNew.put(bt);
+                		
                 		String urlT="http://rarbg.to/download.php?id="+bt.id+"&f="+
                 		bt.name+"-[rarbg.to].torrent";
                 		System.out.println("download: "+urlT);
                         try {
-							HTTPDownload.downloadFile(urlT, saveDir);
+                        	String saveName=bt.name+"-"+bt.id+".torrent";
+							int length=HTTPDownload.downloadFile(urlT, saveDir,saveName);
+							if(length>0) {
+								tbLoaded.put(bt);
+							}
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
                 	}
+                	tbNew.saveToFile(path+fnNew);
+                	tbLoaded.saveToFile(path+fnLoaded);
                 }
         		
 	        	lastUrl=url;

@@ -10,7 +10,7 @@ public class HttpDownloader {
         String saveDir = "C:/Temp";
         fileURL="http://rarbg.to/download.php?id=qzdb4ls&f=VickyAtHome.17.05.05.My.Holes.XXX.1080p.MP4-KTR-[rarbg.to].torrent";
         try {
-            HTTPDownload.downloadFile(fileURL, saveDir);
+            HTTPDownload.downloadFile(fileURL, saveDir,null);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
