@@ -25,6 +25,7 @@ public class HTTPDownload {
             throws IOException {
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+        httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:57.0) Gecko/20100101 Firefox/57.0");
         int responseCode = httpConn.getResponseCode();
 
         // always check HTTP response code first
