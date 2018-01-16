@@ -34,8 +34,28 @@ public class ReadRarbg {
                 List<BtInfo> bts=list.getTable();
                 if(bts!=null) {
                 	for(BtInfo bt:bts) {
-                		System.out.println(""+bt.name+"; "+bt.addedTime+"; "+bt.url+"; "+bt.size+" MB;"+bt.seeder+"/"+bt.leech);
+                		System.out.println("Get page: "+bt.url);
+                		driver.get(bt.url);
+                		for(int i=0;i<8;i++){
+                			System.out.println("-URL:"+driver.getCurrentUrl());
+        	        		try {
+        		        		if(bt.url.equals(driver.getCurrentUrl())) {
+//        			        		Thread.sleep(1000);
+        			                DownloadPage dl= new DownloadPage(driver);
+        			                System.out.println("Downloading");
+        			                dl.download();
+        			                System.out.println("Downloading completed");
+        			        		break;
+        		        		}
+        		        		System.out.println("Sleep");
+        						Thread.sleep(1000);
+        					} catch (InterruptedException e) {
+        						// TODO Auto-generated catch block
+        						e.printStackTrace();
+        					}
+                		}
                 	}
+
                 }
         		
 	        	lastUrl=url;

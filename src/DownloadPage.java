@@ -20,7 +20,8 @@ public class DownloadPage {
 			if(ele!=null) {
 				String url=ele.getAttribute("href");
 				if(url!=null) {
-					driver.get(url);
+					System.out.println("link:"+url);
+//					driver.get(url);
 				}
 			}
 		}
