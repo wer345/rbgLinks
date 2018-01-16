@@ -23,11 +23,16 @@ public class ListPage_Test {
 
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
-        
-        
+
+
         ListPage list= new ListPage(driver);
 
-        list.getTable();
+        List<BtInfo> bts=list.getTable();
+        if(bts!=null) {
+        	for(BtInfo bt:bts) {
+        		System.out.println(""+bt.name+"; "+bt.addedTime+"; "+bt.url+"; "+bt.size+" MB;"+bt.seeder+"/"+bt.leech);
+        	}
+        }
 
 //        String [] matches={"1080P"};
 //        List<String> links=list.getLinks(matches);
