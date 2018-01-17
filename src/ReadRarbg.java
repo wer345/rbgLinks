@@ -29,9 +29,9 @@ public class ReadRarbg {
         String lastUrl="";
         String saveDir = "C:\\Temp";
         String dataFolder="data";
-        String fnFound="found.csv";
-        String fnNew="new.csv";
-        String fnLoaded="loaded.csv";
+        String fnFound="found.txt";
+        String fnNew="new.txt";
+        String fnLoaded="loaded.txt";
         String path=saveDir+"\\"+dataFolder+"\\";
 
 	    BtTable tbFound=new BtTable(path+fnFound);
@@ -70,7 +70,8 @@ public class ReadRarbg {
                 		bt.name+"-[rarbg.to].torrent";
                 		System.out.println("download: "+urlT);
                         try {
-                        	String saveName=bt.name+"-"+bt.id+".torrent";
+                        	String time="["+bt.addedTime.trim().replace(':','.')+"] ";
+                        	String saveName=time +bt.name+" - "+bt.id+".torrent";
 							int length=HTTPDownload.downloadFile(urlT, saveDir,saveName);
 							if(length>0) {
 								tbLoaded.put(bt);

@@ -52,6 +52,7 @@ public class BtTable {
 				String s = data.encode()+"\n";
 			    writer.write(s, 0, s.length());
 			}
+			writer.close();
 		} catch (IOException x) {
 		    System.err.format("IOException: %s%n", x);
 		}

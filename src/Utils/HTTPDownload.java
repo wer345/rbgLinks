@@ -53,7 +53,7 @@ public class HTTPDownload {
 	            }
             }
 
-//            System.out.println("Content-Type = " + contentType);
+            System.out.println("Content-Type = " + contentType);
 //            System.out.println("Content-Disposition = " + disposition);
 //            System.out.println("Content-Length = " + contentLength);
 //            System.out.println("fileName = " + fileName);
@@ -67,14 +67,31 @@ public class HTTPDownload {
 
             int bytesRead = -1;
             byte[] buffer = new byte[BUFFER_SIZE];
+            boolean checkHeader=true;
+            String szHeader="d8:announce";
+            byte[] header=szHeader.getBytes();
+            boolean headerVerified=false;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
+            	if(checkHeader && bytesRead>=header.length) {
+            		headerVerified=true;
+            		for(int i=0;i<header.length;i++) {
+            			if(header[i]!=buffer[i]) {
+            				headerVerified=false;
+            				System.out.println("BT header check failed");
+            				break;
+            			}
+            		}
+            	}
+            	checkHeader=false;
                 outputStream.write(buffer, 0, bytesRead);
             }
 
             outputStream.close();
             inputStream.close();
-
-            System.out.println("File downloaded");
+            if(headerVerified)
+            	System.out.println("File downloaded");
+            else contentLength=0;
+            	
         } else {
             System.out.println("No file to download. Server replied HTTP code: " + responseCode);
         }
