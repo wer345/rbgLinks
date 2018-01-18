@@ -34,10 +34,10 @@ public class ReadRarbg {
         String fnLoaded="loaded.txt";
         String path=saveDir+"\\"+dataFolder+"\\";
 
-	    BtTable tbFound=new BtTable(path+fnFound);
-	    BtTable tbNew=new BtTable(path+fnNew);
-	    BtTable tbLoaded=new BtTable(path+fnLoaded);
-	    
+	    MapData<BtInfo> tbFound=new MapData<BtInfo>(path+fnFound,BtInfo.class);
+	    MapData<BtInfo> tbNew=new MapData<BtInfo>(path+fnNew,BtInfo.class);
+	    MapData<BtInfo> tbLoaded=new MapData<BtInfo>(path+fnLoaded,BtInfo.class);
+
         while(true) {
         	String url="";
         	try {
@@ -58,14 +58,14 @@ public class ReadRarbg {
 
                 List<BtInfo> bts=list.getTable();
                 if(bts!=null) {
-                	
+
                 	for(BtInfo bt:bts) {
                 		if(tbFound.contains(bt.id) || tbNew.contains(bt.id)) {
                 			System.out.println("Old one: "+bt.id+":"+bt.name);
                 			continue;
                 		}
                 		tbNew.put(bt);
-                		
+
                 		String urlT="http://rarbg.to/download.php?id="+bt.id+"&f="+
                 		bt.name+"-[rarbg.to].torrent";
                 		System.out.println("download: "+urlT);
@@ -84,7 +84,7 @@ public class ReadRarbg {
                 	tbNew.saveToFile(path+fnNew);
                 	tbLoaded.saveToFile(path+fnLoaded);
                 }
-        		
+
 	        	lastUrl=url;
         	}
 

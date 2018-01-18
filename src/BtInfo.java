@@ -1,7 +1,9 @@
+import java.util.List;
 
-public class BtInfo implements Linedata{
+public class BtInfo extends LinedataBase{
+	static String[] fieldNames={"Id","Name","AddedTime","Size(MB)","Seeder","Leech"};
+	static String[] fieldTypes={typeString,typeString,typeString,typeSFloat,typeInt,typeInt};
 	String name=null;
-	String id=null;
 	String addedTime=null;
 	float size=0; //MB
 	int seeder=0;
@@ -24,5 +26,16 @@ public class BtInfo implements Linedata{
 		if(id==null)
 			return null;
 		return id+"\t"+name+"\t"+addedTime+"\t"+size+"\t"+seeder+"\t"+leech;
+	}
+
+
+	@Override
+	public String[] getFieldNames() {
+		return fieldNames;
+	}
+
+	@Override
+	public String[] getFieldTypes() {
+		return fieldTypes;
 	}
 }
