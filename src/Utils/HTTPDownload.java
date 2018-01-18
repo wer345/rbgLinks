@@ -17,6 +17,48 @@ import java.net.URL;
 public class HTTPDownload {
     private static final int BUFFER_SIZE = 4096;
 
+    public static byte[] downloadFileData(String fileURL) throws IOException
+    {
+    	int contentLength=0;
+        URL url = new URL(fileURL);
+        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+        httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:57.0) Gecko/20100101 Firefox/57.0");
+        int responseCode = httpConn.getResponseCode();
+        byte[] content=null;
+
+        // always check HTTP response code first
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            String contentType = httpConn.getContentType();
+            contentLength = httpConn.getContentLength();
+
+            System.out.println("Content-Type = " + contentType);
+            System.out.println("Content-Length = " + contentLength);
+
+            // opens input stream from the HTTP connection
+            InputStream inputStream = httpConn.getInputStream();
+            int bytesRead = -1;
+            content = new byte[contentLength];
+            boolean checkHeader=true;
+            String szHeader="d8:announce";
+            byte[] header=szHeader.getBytes();
+            int contentRead=0;
+            int spaceLeft=contentLength;
+            while (spaceLeft>0 && (bytesRead = inputStream.read(content,contentRead,spaceLeft)) != -1) {
+            	contentRead+=bytesRead;
+            	spaceLeft-=bytesRead;
+            }
+            inputStream.close();
+            if(spaceLeft==0)
+            	System.out.println("File downloaded");
+            else
+            	content=null;
+
+        } else {
+            System.out.println("**ERROR: Server replied HTTP code: " + responseCode);
+        }
+        httpConn.disconnect();
+        return content;
+    }
     /**
      * Downloads a file from a URL
      * @param fileURL HTTP URL of the file to be downloaded
@@ -25,77 +67,28 @@ public class HTTPDownload {
      */
     public static int downloadFile(String fileURL, String saveDir,String saveName)
             throws IOException {
-    	int contentLength=0;
-        URL url = new URL(fileURL);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:57.0) Gecko/20100101 Firefox/57.0");
-        int responseCode = httpConn.getResponseCode();
+    	byte[] content = downloadFileData(fileURL);
+    	if(content==null)
+    		return 0;
 
-        // always check HTTP response code first
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = saveName;
-            String contentType = httpConn.getContentType();
-            contentLength = httpConn.getContentLength();
-            
-            if(saveName==null) {
-                String disposition = httpConn.getHeaderField("Content-Disposition");
-	            if (disposition != null) {
-	                // extracts file name from header field
-	                int index = disposition.indexOf("filename=");
-	                if (index > 0) {
-	                    fileName = disposition.substring(index + 10,
-	                            disposition.length() - 1);
-	                }
-	            } else {
-	                // extracts file name from URL
-	                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-	                        fileURL.length());
-	            }
-            }
+        String szHeader="d8:announce";
+        byte[] header=szHeader.getBytes();
+		boolean headerVerified=true;
+		for(int i=0;i<header.length;i++) {
+			if(header[i]!=content[i]) {
+				headerVerified=false;
+				System.out.println("BT header check failed");
+				break;
+			}
+		}
 
-            System.out.println("Content-Type = " + contentType);
-//            System.out.println("Content-Disposition = " + disposition);
-//            System.out.println("Content-Length = " + contentLength);
-//            System.out.println("fileName = " + fileName);
+        String saveFilePath = saveDir + File.separator + saveName;
 
-            // opens input stream from the HTTP connection
-            InputStream inputStream = httpConn.getInputStream();
-            String saveFilePath = saveDir + File.separator + fileName;
+        // opens an output stream to save into file
+        FileOutputStream outputStream = new FileOutputStream(saveFilePath);
 
-            // opens an output stream to save into file
-            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
-
-            int bytesRead = -1;
-            byte[] buffer = new byte[BUFFER_SIZE];
-            boolean checkHeader=true;
-            String szHeader="d8:announce";
-            byte[] header=szHeader.getBytes();
-            boolean headerVerified=false;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-            	if(checkHeader && bytesRead>=header.length) {
-            		headerVerified=true;
-            		for(int i=0;i<header.length;i++) {
-            			if(header[i]!=buffer[i]) {
-            				headerVerified=false;
-            				System.out.println("BT header check failed");
-            				break;
-            			}
-            		}
-            	}
-            	checkHeader=false;
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
+        outputStream.write(content, 0, content.length);
             outputStream.close();
-            inputStream.close();
-            if(headerVerified)
-            	System.out.println("File downloaded");
-            else contentLength=0;
-            	
-        } else {
-            System.out.println("No file to download. Server replied HTTP code: " + responseCode);
-        }
-        httpConn.disconnect();
-        return contentLength;
+       return content.length;
     }
 }
