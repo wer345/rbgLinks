@@ -22,22 +22,14 @@ public class ReadRarbg {
 
         String baseUrl = "http://demo.guru99.com/selenium/newtours/";
         baseUrl="http://rarbg.to/torrent/gzhqyte";
-        baseUrl="http://rarbg.to";
-
+        baseUrl="http://rarbg.to/torrents.php?category=1;4";
+//http://rarbg.to/torrents.php?category=1%3B4&page=2
+        
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
         String lastUrl="";
-        String saveDir = "C:\\Temp";
-        String dataFolder="data";
-        String fnFound="found.txt";
-        String fnNew="new.txt";
-        String fnLoaded="loaded.txt";
-        String path=saveDir+"\\"+dataFolder+"\\";
 
-	    MapData<BtInfo> tbFound=new MapData<BtInfo>(path+fnFound,BtInfo.class);
-	    MapData<BtInfo> tbNew=new MapData<BtInfo>(path+fnNew,BtInfo.class);
-	    MapData<BtInfo> tbLoaded=new MapData<BtInfo>(path+fnLoaded,BtInfo.class);
-
+        String nextUrl=null;
         while(true) {
         	String url="";
         	try {
@@ -52,40 +44,48 @@ public class ReadRarbg {
         		continue;
         	}
 			System.out.println("URL:"+url);
+			if(!url.contains("rarbg.to")) {
+				DownloadTorrent.flush();
+				break;
+			}
+			nextUrl=null;
         	if(!url.equals(lastUrl)) {
         		System.out.println("Detected new page: "+url);
-                ListPage list= new ListPage(driver);
-
-                List<BtInfo> bts=list.getTable();
-                if(bts!=null) {
-
-                	for(BtInfo bt:bts) {
-                		if(tbFound.contains(bt.id) || tbNew.contains(bt.id)) {
-                			System.out.println("Old one: "+bt.id+":"+bt.name);
-                			continue;
-                		}
-                		tbNew.put(bt);
-
-                		String urlT="http://rarbg.to/download.php?id="+bt.id+"&f="+
-                		bt.name+"-[rarbg.to].torrent";
-                		System.out.println("download: "+urlT);
-                        try {
-                        	String time="["+bt.addedTime.trim().replace(':','.')+"] ";
-                        	String saveName=time +bt.name+" - "+bt.id+".torrent";
-							int length=HTTPDownload.downloadFile(urlT, saveDir,saveName);
-							if(length>0) {
-								tbLoaded.put(bt);
-							}
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-                	}
-                	tbNew.saveToFile(path+fnNew);
-                	tbLoaded.saveToFile(path+fnLoaded);
-                }
-
+        		int pos=url.indexOf("category=1%3B4");
+        		boolean isRightPage=false;
+        		if(pos>0) {
+        			int posPage=url.indexOf("page=",pos);
+        			int posEnd=url.indexOf("&",posPage);
+        			if(posPage>0) {
+        				isRightPage=true;
+        				String szPage;
+        				String tail="";
+        				if(posEnd<posPage) 
+        					szPage=url.substring(posPage+5);
+        				else {
+        					szPage=url.substring(posPage+5,posEnd);
+        					tail=url.substring(posEnd);
+        				}
+        				int idxPage=Integer.parseInt(szPage);
+        				if(idxPage>=2)
+        					nextUrl=url.substring(0,posPage)+"page="+(idxPage+1)+tail;
+        			}
+        		}
+        		if(isRightPage) {
+	                ListPage list= new ListPage(driver);
+	
+	                List<BtInfo> bts=list.getTable();
+	                if(bts!=null) {
+	
+	                	for(BtInfo bt:bts) {
+	                		DownloadTorrent.download(bt);
+	                	}
+	            		DownloadTorrent.flush();                		
+	                }
+        		}
 	        	lastUrl=url;
+                if(nextUrl!=null)
+                	driver.get(nextUrl);
         	}
 
         	try {
@@ -95,9 +95,7 @@ public class ReadRarbg {
 				e.printStackTrace();
 			}
         }
-        //close Fire fox
-        //driver.close();
-
+        System.out.println("Done");
     }
 
 }

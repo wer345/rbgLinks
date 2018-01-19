@@ -18,28 +18,31 @@ import java.util.List;
  * @author www.codejava.net
  *
  */
-public class HTTPDownload {
+public class HTTPDownloader {
+	public int responseCode;
+	public String contentType;
+	public int contentLength=0;
+	public int downloadedLength;
     private static final int BUFFER_SIZE = 4096;
 
-    public static byte[] downloadFileData(String fileURL) throws IOException
+    public byte[] get(String fileURL) throws IOException
     {
-    	int contentLength=0;
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         httpConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:57.0) Gecko/20100101 Firefox/57.0");
-        int responseCode = httpConn.getResponseCode();
+        responseCode = httpConn.getResponseCode();
+        contentType = httpConn.getContentType();
+        contentLength = httpConn.getContentLength();
+        // "application/x-bittorrent" for torrent
+        // When no more torrent , the type is "text/html" witn contentLength -1
+//        System.out.println("Content-Type = " + contentType);
+//        System.out.println("Content-Length = " + contentLength);
+        
         byte[] content=null;
-
+        downloadedLength=0;
+        
         // always check HTTP response code first
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            String contentType = httpConn.getContentType();
-            contentLength = httpConn.getContentLength();
-            
-            // "application/x-bittorrent" for torrent
-            // When no more torrent , the type is "text/html" witn contentLength -1
-            System.out.println("Content-Type = " + contentType);
-            System.out.println("Content-Length = " + contentLength);
-
             // opens input stream from the HTTP connection
             InputStream inputStream = httpConn.getInputStream();
             int bytesRead = -1;
@@ -51,10 +54,14 @@ public class HTTPDownload {
 	            	contentRead+=bytesRead;
 	            	spaceLeft-=bytesRead;
 	            }
-	            if(spaceLeft==0)
+	            if(spaceLeft==0){
+	            	downloadedLength=contentLength;
 	            	System.out.println("File downloaded");
-	            else
+	            }
+	            else {
+	            	downloadedLength=0;
 	            	content=null;
+	            }
             }
             else {
             	ByteArrayOutputStream c= new ByteArrayOutputStream();
@@ -65,6 +72,7 @@ public class HTTPDownload {
 	            }
 	            c.flush();
 	            content=c.toByteArray();
+	            downloadedLength=content.length;
             }
             
             inputStream.close();
@@ -81,30 +89,30 @@ public class HTTPDownload {
      * @param saveDir path of the directory to save the file
      * @throws IOException
      */
-    public static int downloadFile(String fileURL, String saveDir,String saveName)
-            throws IOException {
-    	byte[] content = downloadFileData(fileURL);
-    	if(content==null)
-    		return 0;
-
-        String szHeader="d8:announce";
-        byte[] header=szHeader.getBytes();
-		boolean headerVerified=true;
-		for(int i=0;i<header.length;i++) {
-			if(header[i]!=content[i]) {
-				headerVerified=false;
-				System.out.println("BT header check failed");
-				break;
-			}
-		}
-
-        String saveFilePath = saveDir + File.separator + saveName;
-
-        // opens an output stream to save into file
-        FileOutputStream outputStream = new FileOutputStream(saveFilePath);
-
-        outputStream.write(content, 0, content.length);
-            outputStream.close();
-       return content.length;
-    }
+//    public static int downloadFile(String fileURL, String saveDir,String saveName)
+//            throws IOException {
+//    	byte[] content = new HTTPDownloader().get(fileURL);
+//    	if(content==null)
+//    		return 0;
+//
+//        String szHeader="d8:announce";
+//        byte[] header=szHeader.getBytes();
+//		boolean headerVerified=true;
+//		for(int i=0;i<header.length;i++) {
+//			if(header[i]!=content[i]) {
+//				headerVerified=false;
+//				System.out.println("BT header check failed");
+//				break;
+//			}
+//		}
+//
+//        String saveFilePath = saveDir + File.separator + saveName;
+//
+//        // opens an output stream to save into file
+//        FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+//
+//        outputStream.write(content, 0, content.length);
+//            outputStream.close();
+//       return content.length;
+//    }
 }
