@@ -60,7 +60,7 @@ public class MapData <T extends Linedata>{
     	}
     	return false;
     }
-    
+
 	public void loadFromFile(String fileName) {
 		Path file = Paths.get(fileName);
 		map = new HashMap<String,T>();
@@ -83,15 +83,15 @@ public class MapData <T extends Linedata>{
 				    			line = reader.readLine();
 				    			if(line!=null) {
 				    				match=true;
-				    			}	
+				    			}
 				    		}
 		    			}
 		    		}
 		    		if(!match)
 		    			return;
 		    	}
-		    	data.decode(line);
-		    	map.put(data.getId(), data);
+		    	if(data.decode(line))
+		    		map.put(data.getId(), data);
 		    }
 		} catch (IOException x) {
 		    System.err.println(x);

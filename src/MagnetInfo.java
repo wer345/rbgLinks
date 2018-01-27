@@ -7,16 +7,18 @@ public class MagnetInfo extends LinedataBase{
 	String addedTime=null;
 	String name;
 	String hashInfo;
-	
+
 	@Override
-	public void decode(String line) {
+	public boolean decode(String line) {
 		String[] fields=line.split("\t");
 		if(fields.length==fieldNames.length) {
 			id=fields[0];
 			addedTime=fields[1];
 			name=fields[2];
 			hashInfo=fields[3];
+			return true;
 		}
+		return false;
 	}
 
 	@Override

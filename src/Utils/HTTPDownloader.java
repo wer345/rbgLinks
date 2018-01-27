@@ -37,10 +37,10 @@ public class HTTPDownloader {
         // When no more torrent , the type is "text/html" witn contentLength -1
 //        System.out.println("Content-Type = " + contentType);
 //        System.out.println("Content-Length = " + contentLength);
-        
+
         byte[] content=null;
         downloadedLength=0;
-        
+
         // always check HTTP response code first
         if (responseCode == HttpURLConnection.HTTP_OK) {
             // opens input stream from the HTTP connection
@@ -65,7 +65,7 @@ public class HTTPDownloader {
             }
             else {
             	ByteArrayOutputStream c= new ByteArrayOutputStream();
-            	
+
             	byte[] buffer= new byte[BUFFER_SIZE];
 	            while ((bytesRead = inputStream.read(buffer)) != -1) {
 	            	c.write(buffer,0,bytesRead);
@@ -74,11 +74,12 @@ public class HTTPDownloader {
 	            content=c.toByteArray();
 	            downloadedLength=content.length;
             }
-            
+
             inputStream.close();
 
         } else {
-            System.out.println("**ERROR: Server replied HTTP code: " + responseCode);
+            System.out.println("**ERROR: Server replied HTTP code: " + responseCode+" for url "+fileURL);
+            content=null;
         }
         httpConn.disconnect();
         return content;

@@ -34,7 +34,7 @@ public class HTTPDownload {
         if (responseCode == HttpURLConnection.HTTP_OK) {
             String contentType = httpConn.getContentType();
             contentLength = httpConn.getContentLength();
-            
+
             // "application/x-bittorrent" for torrent
             // When no more torrent , the type is "text/html" witn contentLength -1
             System.out.println("Content-Type = " + contentType);
@@ -58,7 +58,7 @@ public class HTTPDownload {
             }
             else {
             	ByteArrayOutputStream c= new ByteArrayOutputStream();
-            	
+
             	byte[] buffer= new byte[BUFFER_SIZE];
 	            while ((bytesRead = inputStream.read(buffer)) != -1) {
 	            	c.write(buffer,0,bytesRead);
@@ -66,11 +66,11 @@ public class HTTPDownload {
 	            c.flush();
 	            content=c.toByteArray();
             }
-            
+
             inputStream.close();
 
         } else {
-            System.out.println("**ERROR: Server replied HTTP code: " + responseCode);
+            System.out.println("**ERROR: Server replied HTTP code: " + responseCode+" for url "+fileURL);
         }
         httpConn.disconnect();
         return content;

@@ -5,27 +5,31 @@ import java.io.IOException;
 import Utils.HTTPDownloader;
 
 public class DownloadTorrent {
-	static String saveDir = "C:\\Temp";
+	static String saveDir = "C:\\Temp\\bt"
+			+ "";
 	static String dataFolder="data";
 	static String fnFound="found.txt";
 	static String fnNew="new.txt";
 	static String fnLoaded="loaded.txt";
+	static String fnFailed="failed.txt";
 	static String fnMagnet="magnet.txt";
 	static String path=saveDir+"\\"+dataFolder+"\\";
 	static MapData<BtInfo> mapFound;
 	static MapData<BtInfo> mapNew;
 	static MapData<BtInfo> mapLoaded;
+	static MapData<BtInfo> mapFailed;
 	static MapData<MagnetInfo> mapMagnet;
-	
+
 	static HTTPDownloader downloader= new	HTTPDownloader();
-    
+
 	static {
 		mapFound=new MapData<BtInfo>(path+fnFound,BtInfo.class);
 		mapNew=new MapData<BtInfo>(path+fnNew,BtInfo.class);
 		mapLoaded=new MapData<BtInfo>(path+fnLoaded,BtInfo.class);
+		mapFailed=new MapData<BtInfo>(path+fnFailed,BtInfo.class);
 		mapMagnet=new MapData<MagnetInfo>(path+fnMagnet,MagnetInfo.class);
 	}
-	
+
 	static int indexOf(byte[] data, byte[] lookfor,int from) {
 		int p=from;
 		while(p<data.length) {
@@ -53,32 +57,35 @@ public class DownloadTorrent {
 		}
 		return match;
 	}
-	
+
 	static void download(BtInfo bt) {
 		String id=bt.id;
 		String name=bt.name;
 		String addedTime=bt.addedTime;
-		
+
 		try {
     		if(mapFound.contains(id) || mapLoaded.contains(id)) {
     			System.out.println("Old one: "+id+":"+name);
     			return;
     		}
     		mapNew.put(bt);
-			
+
     		String url="http://rarbg.to/download.php?id="+id+"&f="+
-    				name+"-[rarbg.to].torrent";
-			
+    				"fff";
+//    				name+"-[rarbg.to].torrent";
+
 			byte[] content= downloader.get(url);
-	    	if(content==null)
+	    	if(content==null) {
+		        mapFailed.put(bt);
 	    		return;
+	    	}
 
 	        String torrentHeader="d8:announce"; // The header of Torrent file
 	        String htmlHeader="<!DOCTYPE html";
 			if(headerMatches(content,torrentHeader.getBytes())) {
             	String time="["+addedTime.trim().replace(':','.')+"] ";
             	String saveName=time +name+" - "+id+".torrent";
-				
+
 				System.out.println("Save Torrent file to "+saveName);
 		        String saveFilePath = saveDir + File.separator + saveName;
 		        // opens an output stream to save into file
@@ -89,7 +96,7 @@ public class DownloadTorrent {
 			}
 			else if(headerMatches(content,htmlHeader.getBytes())) {
 				System.out.println("Get an html file, finding magnet");
-				
+
 				String magnetHeader="<a href=\"magnet:?xt=";
 				int pos=indexOf(content,magnetHeader.getBytes(),0);
 				if(pos>0) {
@@ -115,16 +122,17 @@ public class DownloadTorrent {
 			else {
 				System.out.println("unknow response");
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void flush() {
 		mapNew.saveToFile(path+fnNew);
 		mapLoaded.saveToFile(path+fnLoaded);
+		mapFailed.saveToFile(path+fnFailed);
 		mapMagnet.saveToFile(path+fnMagnet);
 	}
 }

@@ -11,9 +11,8 @@ public class LinedataBase implements Linedata{
 	}
 
 	@Override
-	public void decode(String line) {
-		// TODO Auto-generated method stub
-
+	public boolean decode(String line) {
+		return false;
 	}
 
 	@Override

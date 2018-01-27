@@ -15,11 +15,14 @@ public class ListPage {
 		this.driver=driver;
 	}
 
-	List<BtInfo> getTable() {
+	List<BtInfo> getTable(String xpath) {
 		List<BtInfo> bts=null;
+		String xpath_list="/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]";
+		String xpath_top100="/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table";
+//		String xpath=xpath_top100;
 		try {
-			WebElement ele = driver.findElement(By.xpath("/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]"));
-
+			WebElement ele = driver.findElement(By.xpath(xpath));
+//														  
 			if(ele!=null) {
 				//System.out.println("Table: "+ele.getText());
 				List<WebElement> rows=ele.findElements(By.xpath("tbody/tr"));
@@ -36,7 +39,12 @@ public class ListPage {
 						if(icol==1) {
 							WebElement link = cell.findElement(By.xpath("a"));
 							bt.name=link.getText();
-							bt.id=link.getAttribute("href").substring(headlen);
+							String id=link.getAttribute("href").substring(headlen);
+							int pos=id.lastIndexOf("/");
+							if(pos>0)
+								bt.id=id.substring(pos+1);
+							else
+								bt.id=id;
 							
 							//System.out.println("Title "+text+" :"+url);
 						}
@@ -76,6 +84,7 @@ public class ListPage {
 		}
 		catch(Exception e) {
 			//System.out.println("Exception:"+e.toString());
+			System.out.println("xpath not found:"+xpath);
 			bts=null;
 		}
 //        List<WebElement> eles = driver.findElements(By.tagName("table"));

@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="C:/codeEclipse460/Selenium/selenium-java-3.8.1/libs/httpclient-4.5.3.jar"/>
 	<classpathentry kind="lib" path="C:/codeEclipse460/Selenium/selenium-java-3.8.1/libs/httpcore-4.4.6.jar"/>
 	<classpathentry kind="lib" path="C:/codeEclipse460/Selenium/selenium-java-3.8.1/client-combined-3.8.1.jar"/>
+	<classpathentry kind="lib" path="C:/codeEclipse460/Selenium/lib/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

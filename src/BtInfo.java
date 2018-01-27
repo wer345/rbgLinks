@@ -9,16 +9,23 @@ public class BtInfo extends LinedataBase{
 	int seeder=0;
 	int leech=0;
 	@Override
-	public void decode(String line) {
+	public boolean decode(String line) {
 		String[] fields=line.split("\t");
 		if(fields.length==6) {
-			id=fields[0];
-			name=fields[1];
-			addedTime=fields[2];
-			size=Float.parseFloat(fields[3]);
-			seeder=Integer.parseInt(fields[4]);
-			leech=Integer.parseInt(fields[5]);
+			try {
+				id=fields[0];
+				name=fields[1];
+				addedTime=fields[2];
+				size=Float.parseFloat(fields[3]);
+				seeder=Integer.parseInt(fields[4]);
+				leech=Integer.parseInt(fields[5]);
+				return true;
+			}
+			catch (Exception e) {
+
+			}
 		}
+		return false;
 	}
 
 	@Override

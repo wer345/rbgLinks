@@ -26,8 +26,9 @@ public class ListPage_Test {
 
 
         ListPage list= new ListPage(driver);
+		String xpath_list="/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]";
 
-        List<BtInfo> bts=list.getTable();
+        List<BtInfo> bts=list.getTable(xpath_list);
         if(bts!=null) {
         	for(BtInfo bt:bts) {
         		String url=ListPage.TorPath+bt.id;
