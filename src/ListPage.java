@@ -9,7 +9,7 @@ public class ListPage {
 	public static String TorPath="http://rarbg.to/torrent/"; 
 	public static int headlen=TorPath.length();
 
-	WebDriver driver;
+	public WebDriver driver;
 
 	ListPage(WebDriver driver) {
 		this.driver=driver;

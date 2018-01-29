@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import Utils.HTTPDownload;
@@ -48,6 +49,7 @@ public class ReadRarbg {
 				DownloadTorrent.flush();
 				break;
 			}
+			boolean checkEnd=true;
 			nextUrl=null;
         	if(!url.equals(lastUrl)) {
         		System.out.println("Detected new page: "+url);
@@ -71,6 +73,7 @@ public class ReadRarbg {
         					nextUrl=url.substring(0,posPage)+"page="+(idxPage+1)+tail;
         			}
         		}
+        		boolean foundList=false;
         		if(isRightPage) {
 	                ListPage list= new ListPage(driver);
 	        		String xpath_list="/html/body/table[3]/tbody/tr/td[2]/div/table/tbody/tr[2]/td/table[2]";
@@ -80,14 +83,46 @@ public class ReadRarbg {
 	
 	                	for(BtInfo bt:bts) {
 	                		DownloadTorrent.download(bt);
+	                		foundList=true;
 	                	}
 	            		DownloadTorrent.flush();                		
 	                }
         		}
+        		
+        		if(!foundList){
+        			System.out.println("No Bt file found");
+        			checkEnd=true;
+        		}
+        		
 	        	lastUrl=url;
                 if(nextUrl!=null)
                 	driver.get(nextUrl);
         	}
+    		if(checkEnd)
+    		{
+    			// /
+    			try {
+	    			WebElement ele= driver.findElement(By.xpath("html/body/div/div/a"));
+	    			String txt=ele.getText();
+	    			System.out.println("text:"+txt);
+	    			if(txt.contains("Click here")) {
+	    				ele.click();
+	    				continue;
+	    			}
+    			}
+    			catch (Exception e) {
+    			}
+    			
+    			try {
+	    			WebElement ele= driver.findElement(By.xpath("/html/body"));
+	    			String txt=ele.getText();
+//	    			System.out.println("text:"+txt);
+	    			if(txt.contains("Im sorry but we cannot process your request right now.")) 
+	    				return;
+    			}
+    			catch (Exception e) {
+    			}
+    		}
 
         	try {
         		Thread.sleep(2000);
