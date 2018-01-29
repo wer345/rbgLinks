@@ -94,7 +94,7 @@ public class MapData <T extends Linedata>{
 		    		map.put(data.getId(), data);
 		    }
 		} catch (IOException x) {
-		    System.err.println(x);
+		    // System.err.println(x);
 		}
 	}
 
@@ -107,6 +107,37 @@ public class MapData <T extends Linedata>{
 				line+="\t"+field;
 		}
 		return line;
+	}
+
+	public String getLatestTime() {
+		return getLatestTime(true);
+	}
+
+	public String getOldestTime() {
+		return getLatestTime(false);
+	}
+
+	private String getLatestTime(boolean checkLatest) {
+		String timeFound=null;
+		for(String id:map.keySet()) {
+			T data = map.get(id);
+			if( data instanceof LinedataAddedtime) {
+				LinedataAddedtime tdata=(LinedataAddedtime)data;
+				if(timeFound==null)
+					timeFound=tdata.addedTime;
+				else {
+					if(checkLatest) {
+						if(tdata.addedTime.compareTo(timeFound)>0)
+							timeFound=tdata.addedTime;
+					}
+					else {
+						if(tdata.addedTime.compareTo(timeFound)<0)
+							timeFound=tdata.addedTime;
+					}
+				}
+			}
+		}
+		return timeFound;
 	}
 
 	public void saveToFile(String fileName) {

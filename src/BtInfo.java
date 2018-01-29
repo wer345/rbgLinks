@@ -1,10 +1,9 @@
 import java.util.List;
 
-public class BtInfo extends LinedataBase{
+public class BtInfo extends LinedataAddedtime{
 	static String[] fieldNames={"Id","Name","AddedTime","Size(MB)","Seeder","Leech"};
 	static String[] fieldTypes={typeString,typeString,typeString,typeSFloat,typeInt,typeInt};
 	String name=null;
-	String addedTime=null;
 	float size=0; //MB
 	int seeder=0;
 	int leech=0;

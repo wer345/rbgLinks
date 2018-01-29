@@ -12,6 +12,7 @@ public class DownloadTorrent {
 	static String fnNew="new.txt";
 	static String fnLoaded="loaded.txt";
 	static String fnFailed="failed.txt";
+	static String fnMagnetNew="magnet_new.txt";
 	static String fnMagnet="magnet.txt";
 	static String path=saveDir+"\\"+dataFolder+"\\";
 	static MapData<BtInfo> mapFound;
@@ -19,6 +20,7 @@ public class DownloadTorrent {
 	static MapData<BtInfo> mapLoaded;
 	static MapData<BtInfo> mapFailed;
 	static MapData<MagnetInfo> mapMagnet;
+	static MapData<MagnetInfo> mapMagnetNew;
 
 	static HTTPDownloader downloader= new	HTTPDownloader();
 
@@ -28,6 +30,7 @@ public class DownloadTorrent {
 		mapLoaded=new MapData<BtInfo>(path+fnLoaded,BtInfo.class);
 		mapFailed=new MapData<BtInfo>(path+fnFailed,BtInfo.class);
 		mapMagnet=new MapData<MagnetInfo>(path+fnMagnet,MagnetInfo.class);
+		mapMagnetNew=new MapData<MagnetInfo>(path+fnMagnetNew,MagnetInfo.class);
 	}
 
 	static int indexOf(byte[] data, byte[] lookfor,int from) {
@@ -58,15 +61,16 @@ public class DownloadTorrent {
 		return match;
 	}
 
-	static void download(BtInfo bt) {
+	// return 0 for failed, 1 for torrent downloaded, 2 for magnet downloaded, 3 for already downloaded before
+	static int download(BtInfo bt) {
 		String id=bt.id;
 		String name=bt.name;
 		String addedTime=bt.addedTime;
 
 		try {
-    		if(mapFound.contains(id) || mapLoaded.contains(id)) {
+    		if(mapFound.contains(id) || mapLoaded.contains(id) || mapMagnet.contains(id) || mapMagnetNew.contains(id)) {
     			System.out.println("Old one: "+id+":"+name);
-    			return;
+    			return 3;
     		}
     		mapNew.put(bt);
 
@@ -77,7 +81,7 @@ public class DownloadTorrent {
 			byte[] content= downloader.get(url);
 	    	if(content==null) {
 		        mapFailed.put(bt);
-	    		return;
+	    		return 0;
 	    	}
 
 	        String torrentHeader="d8:announce"; // The header of Torrent file
@@ -93,6 +97,7 @@ public class DownloadTorrent {
 		        outputStream.write(content, 0, content.length);
 		        outputStream.close();
 		        mapLoaded.put(bt);
+		        return 1;
 			}
 			else if(headerMatches(content,htmlHeader.getBytes())) {
 				System.out.println("Get an html file, finding magnet");
@@ -115,7 +120,8 @@ public class DownloadTorrent {
 						mi.hashInfo=mag.substring(p1+12, p2);
 						mi.name=mag.substring(p2+4,p3);
 						System.out.println("found magnet "+id+", "+mi.name);
-						mapMagnet.put(mi);
+						mapMagnetNew.put(mi);
+						return 2;
 					}
 				}
 			}
@@ -127,12 +133,13 @@ public class DownloadTorrent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return 0;
 	}
 
 	public static void flush() {
 		mapNew.saveToFile(path+fnNew);
 		mapLoaded.saveToFile(path+fnLoaded);
 		mapFailed.saveToFile(path+fnFailed);
-		mapMagnet.saveToFile(path+fnMagnet);
+		mapMagnetNew.saveToFile(path+fnMagnetNew);
 	}
 }

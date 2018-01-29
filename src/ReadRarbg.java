@@ -25,7 +25,7 @@ public class ReadRarbg {
         baseUrl="http://rarbg.to/torrent/gzhqyte";
         baseUrl="http://rarbg.to/torrents.php?category=1;4";
 //http://rarbg.to/torrents.php?category=1%3B4&page=2
-        
+
         // launch Fire fox and direct it to the Base URL
         driver.get(baseUrl);
         String lastUrl="";
@@ -62,7 +62,7 @@ public class ReadRarbg {
         				isRightPage=true;
         				String szPage;
         				String tail="";
-        				if(posEnd<posPage) 
+        				if(posEnd<posPage)
         					szPage=url.substring(posPage+5);
         				else {
         					szPage=url.substring(posPage+5,posEnd);
@@ -80,20 +80,33 @@ public class ReadRarbg {
 
 	                List<BtInfo> bts=list.getTable(xpath_list);
 	                if(bts!=null) {
-	
+	                	int cnt=0;
+	                	int cntFailed=0;
+	                	int cntOlds=0;
 	                	for(BtInfo bt:bts) {
-	                		DownloadTorrent.download(bt);
+	                		cnt++;
+	                		int code=DownloadTorrent.download(bt);
+	                		if(code==0)
+	                			cntFailed++;
+	                		if(code==3)
+	                			cntOlds++;
+
 	                		foundList=true;
 	                	}
-	            		DownloadTorrent.flush();                		
+	                	if(cnt!=cntFailed)
+	                		DownloadTorrent.flush();
+	                	if(cnt==cntOlds)
+	                	{
+	                		System.out.println("All bts in this page already got");
+	                	}
 	                }
         		}
-        		
+
         		if(!foundList){
         			System.out.println("No Bt file found");
         			checkEnd=true;
         		}
-        		
+
 	        	lastUrl=url;
                 if(nextUrl!=null)
                 	driver.get(nextUrl);
@@ -112,12 +125,12 @@ public class ReadRarbg {
     			}
     			catch (Exception e) {
     			}
-    			
+
     			try {
 	    			WebElement ele= driver.findElement(By.xpath("/html/body"));
 	    			String txt=ele.getText();
 //	    			System.out.println("text:"+txt);
-	    			if(txt.contains("Im sorry but we cannot process your request right now.")) 
+	    			if(txt.contains("Im sorry but we cannot process your request right now."))
 	    				return;
     			}
     			catch (Exception e) {

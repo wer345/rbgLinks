@@ -1,10 +1,9 @@
 import java.util.List;
 
-public class MagnetInfo extends LinedataBase{
+public class MagnetInfo extends LinedataAddedtime{
 	static String[] fieldNames={"Id","AddedTime","name","HashInfo"};
-	static String[] fieldTypes={typeString,typeString,typeString};
+	static String[] fieldTypes={typeString,typeString,typeString,typeString};
 
-	String addedTime=null;
 	String name;
 	String hashInfo;
 
