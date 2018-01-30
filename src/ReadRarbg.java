@@ -49,6 +49,9 @@ public class ReadRarbg {
 				DownloadTorrent.flush();
 				break;
 			}
+			if(UrlTools.isHomePage(url)) {
+				driver.get("http://rarbg.to/torrents.php?category=1%3B4?page=2");
+			}
 			boolean checkEnd=true;
 			nextUrl=null;
         	if(!url.equals(lastUrl)) {
